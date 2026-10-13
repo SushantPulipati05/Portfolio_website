@@ -85,14 +85,32 @@ export const domains: Domain[] = [
   // },
 ];
 
+// Projects are shown in three tiers on the Projects page:
+//   "featured" = Deep dives (built properly, measured, documented)
+//   "app"      = Apps & products (full-stack apps, shipped or in progress)
+//   "lab"      = Small builds & experiments (section is hidden while empty)
+// Order inside a tier = order in this list.
+export type ProjectTier = "featured" | "app" | "lab";
+
+export type ProjectDemo =
+  | { kind: "terminal" } // animated Redis terminal
+  | { kind: "queue" } // animated job queue (Taskq)
+  // A screen recording in /public/demos: give the path without the extension,
+  // and provide both .webm and .mp4 plus a -poster.jpg
+  | { kind: "video"; src: string; shape: "portrait" | "landscape"; label: string }
+  | { kind: "none" };
+
 export type Project = {
   slug: string;
   name: string;
+  tier: ProjectTier;
   tags: string;
+  status?: string;
   description: string;
-  // "terminal" shows the animated Redis demo; "media" shows a GIF/video.
-  // Drop a GIF or MP4 in /public/demos and set src, e.g. "/demos/trainlog.mp4"
-  demo: { kind: "terminal" } | { kind: "media"; src?: string; caption: string };
+  role?: string; // for team projects: what I built
+  stats?: { value: string; label: string }[];
+  learned: string[];
+  demo: ProjectDemo;
   links: { label: string; href: string }[];
 };
 
@@ -100,46 +118,114 @@ export const projects: Project[] = [
   {
     slug: "redis-go",
     name: "Redis_Go",
-    tags: "go · replication · failover",
+    tier: "featured",
+    tags: "go · distributed systems",
     description:
-      "A Redis-compatible database built from scratch in Go. It works with the official redis-cli, redis-benchmark and client libraries, with AOF persistence and crash recovery, leader-follower replication, and automatic failover through Raft-inspired majority elections. Verified against real Redis with 100,000 randomized commands, and tuned to 660k GET/s with pipelining.",
+      "A Redis-compatible database built from scratch in Go. Works with the official redis-cli, redis-benchmark and client libraries, with AOF persistence and crash recovery, leader-follower replication, and automatic failover through Raft-inspired majority elections.",
+    stats: [
+      { value: "660k", label: "GET/s pipelined" },
+      { value: "100,000", label: "commands verified vs real Redis" },
+    ],
+    learned: [
+      "Profiling beats guessing: batching reply writes gave a 2.9× throughput jump.",
+      "Failover is the hard part of a database: majority elections, split-brain write protection and WAIT for synchronous replication.",
+      "Diffing 100,000 randomized commands against real Redis is a much stronger check than hand-written test cases.",
+    ],
     demo: { kind: "terminal" },
     links: [{ label: "code ↗", href: "https://github.com/SushantPulipati05/Redis_Go" }],
   },
   {
+    slug: "taskq",
+    name: "Taskq",
+    tier: "featured",
+    tags: "go · postgres · prometheus",
+    description:
+      "A durable background-job queue with Postgres as the only store. Workers claim jobs atomically with SKIP LOCKED, hold leases with fencing, retry with exponential backoff, and a reaper recovers jobs from crashed workers. Enqueue can share a transaction with business data.",
+    stats: [
+      { value: "0.19 ms", label: "job claim on 1M rows" },
+      { value: "4,383", label: "jobs/s, 32 workers, durable" },
+    ],
+    learned: [
+      "A full index was slower than no index at all. A partial index on queued jobs took the claim query from ~306 ms to 0.19 ms.",
+      "Durability has a cost: about 80% of each job's time was the commit flushing to disk.",
+      "Exactly-once delivery isn't possible here, so job handlers have to be idempotent.",
+    ],
+    demo: { kind: "queue" },
+    links: [{ label: "code ↗", href: "https://github.com/SushantPulipati05/taskq" }],
+  },
+  {
+    slug: "razorpay-recovery",
+    name: "razorpay_recovery",
+    tier: "featured",
+    tags: "typescript · postgres · razorpay · twilio",
+    description:
+      "Recovers revenue from failed payments, subscriptions and overdue invoices. It diagnoses each failure, picks a bounded fix (UPI-only link, WhatsApp nudge, deferral or a silent halt for fraud), respects quiet hours, and reports lift against a holdout group. Built for Razorpay's hackathon.",
+    stats: [
+      { value: "30%", label: "holdout to measure real lift" },
+      { value: "rules → AI", label: "stricter action always wins" },
+    ],
+    learned: [
+      "Let deterministic rules decide and let AI only make an action stricter, so the system stays predictable.",
+      "Measure lift against a holdout group, not raw recovery counts.",
+      "Webhooks need signature checks and idempotency, or retries count the same payment twice.",
+    ],
+    demo: { kind: "video", src: "/demos/razorpay-recovery", shape: "landscape", label: "razorpay_recovery dashboard: live recovery metrics, lift by strategy, agent activity and guardrails" },
+    links: [{ label: "code ↗", href: "https://github.com/SushantPulipati05/razorpay_recovery" }],
+  },
+  {
     slug: "trainlog",
     name: "TrainLog",
-    tags: "kotlin · compose · ktor · postgresql",
+    tier: "app",
+    status: "in beta",
+    tags: "kotlin · compose · ktor · postgres",
     description:
-      "A full-stack workout tracker: a native Android app backed by a Ktor REST API and PostgreSQL, deployed on Railway. Start a workout, pick an exercise, log sets, reps and weight. In beta with real users.",
-    demo: { kind: "media", caption: "starting a workout and logging a set" },
+      "An Android workout tracker: plan your split, start a session and log sets with a live timer, then look back through every workout on a training calendar. Backed by a Ktor REST API and Postgres on Railway.",
+    learned: [
+      "Taking an app from localhost to a live API on Railway that real people use.",
+      "Modelling workouts, exercises and sets as a relational schema in Postgres.",
+    ],
+    demo: { kind: "video", src: "/demos/trainlog", shape: "portrait", label: "TrainLog: starting a workout, logging sets and browsing the training calendar" },
     links: [{ label: "code ↗", href: "https://github.com/SushantPulipati05/TrainLog" }],
+  },
+  {
+    slug: "diabetease",
+    name: "DiabetEase",
+    tier: "app",
+    status: "iOS · team project",
+    tags: "swift · uikit",
+    description:
+      "Helps people with diabetes track glucose, meals, water, steps and symptoms, share their data with family, and keep prescriptions and reports in one place.",
+    role: "I built the meal logging screens and the onboarding pages, and worked on the app's UI.",
+    learned: [
+      "Building polished UIKit screens that match a design closely.",
+      "Designing onboarding that collects health details without feeling like a long form.",
+      "Working in a shared codebase with a team.",
+    ],
+    demo: { kind: "video", src: "/demos/diabetease", shape: "portrait", label: "DiabetEase: dashboard, meal logs, meal detail, symptoms and family" },
+    links: [{ label: "code ↗", href: "https://github.com/chirag3003/mitwpu_group3" }],
   },
   {
     slug: "journaling-app",
     name: "Journaling app",
-    tags: "go · kotlin · postgresql · in progress",
+    tier: "app",
+    status: "in progress",
+    tags: "go · kotlin · postgres",
     description:
-      "An offline-first journal for Android and desktop, synced through a stateless Go REST API. Push/pull sync with conflict resolution, versioned records and tombstones, plus Google Sign-In with JWTs.",
-    demo: { kind: "media", caption: "entry written on desktop, appearing on phone" },
+      "An offline-first journal for Android and desktop, synced through a stateless Go REST API, with Google Sign-In and JWTs.",
+    learned: ["Designing sync: device-generated UUIDs, versioned records, tombstones and conflict resolution."],
+    demo: { kind: "none" },
     links: [],
   },
   {
     slug: "bigBrain",
     name: "BigBrain",
+    tier: "app",
+    status: "AI notes",
     tags: "next.js · typescript · node.js · openai",
     description:
-      "An AI-powered note-taking app that keeps notes and uploaded files of different formats in one workspace, with automatic summaries, content extraction and contextual search across your documents.",
-    demo: { kind: "media", caption: "uploading a file and searching across notes" },
+      "An AI-powered notes workspace that keeps notes and uploaded files in one place, with automatic summaries, content extraction and contextual search.",
+    learned: ["Wiring LLMs and vector search into a real product."],
+    demo: { kind: "none" },
     links: [{ label: "code ↗", href: "https://github.com/SushantPulipati05/big-brain" }],
   },
-  // {
-  //   slug: "diabetes-app",
-  //   name: "Diabetes Management App",
-  //   tags: "swift · uikit",
-  //   description:
-  //     "An iOS app that helps people with diabetes track blood glucose, meals, activity and symptoms, with custom charts of long-term trends.",
-  //   demo: { kind: "media", caption: "logging a reading and viewing trend charts" },
-  //   links: [],
-  // },
 ];

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Card Options</title>
+<style>
+:root{--bg:#f5f2eb;--grid:#e8e3d8;--surface:#fbf9f4;--line:#ded8cb;--text:#14130f;--body:#2e2c27;--muted:#5c5850;--accent:#2f4bff;--accent-soft:#e3e5f6;--chip:#eee9df;--mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;--display:"Bricolage Grotesque",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:40px 40px;color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:40px 24px 80px}
+h1{font-size:40px;letter-spacing:-.03em;margin:0 0 8px}
+.lead{color:var(--body);margin:0 0 8px;max-width:680px}
+.opt{margin-top:64px}
+.opt-head{display:flex;gap:12px;align-items:baseline;margin-bottom:4px}
+.opt-head .n{font:13px var(--mono);color:var(--accent)}
+.opt-head h2{margin:0;font-size:24px;letter-spacing:-.02em}
+.why{margin:0 0 18px;color:var(--body);font-size:15px;max-width:720px}
+/* shared card bits */
+.card{border-radius:22px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.media{position:relative;background:#0b0f1a;aspect-ratio:16/9;max-height:540px}
+.media video{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.label{font:13px var(--mono);color:var(--accent)}
+.title{font-family:var(--display);font-weight:800;font-size:36px;letter-spacing:-.03em;line-height:1.05;margin:0}
+.desc{color:var(--body);margin:0}
+.stats{display:flex;gap:32px;flex-wrap:wrap}
+.stat{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.03em;line-height:1}
+.stat small{display:block;margin-top:5px;font:12px var(--mono);font-weight:400;letter-spacing:0;color:var(--muted)}
+.links{display:flex;gap:18px;font:14px var(--mono)}
+.links a{color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;background:var(--text);color:var(--bg)!important;text-decoration:none;font:500 14px var(--mono)}
+.learned{border-radius:14px;background:var(--accent-soft);padding:16px 18px}
+.learned-h{font:13px var(--mono);color:var(--accent);margin-bottom:8px}
+.learned ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--body);font-size:15px}
+.learned li::marker{font:13px var(--mono);color:var(--accent)}
+/* ---------- A: single column ---------- */
+.a .body{padding:26px 30px 30px;display:flex;flex-direction:column;gap:16px}
+.a .head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.a .desc{max-width:680px;font-size:16.5px}
+.a .lessons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px}
+.a .lesson{background:var(--accent-soft);border-radius:12px;padding:14px 16px;font-size:14.5px;color:var(--body)}
+.a .lesson b{display:block;font:12px var(--mono);color:var(--accent);font-weight:400;margin-bottom:4px}
+.a .lessons-h{font:13px var(--mono);color:var(--accent);margin-top:8px}
+/* ---------- B: header row + 2 columns ---------- */
+.b .body{padding:26px 30px 30px}
+.b .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.b .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.b .left{display:flex;flex-direction:column;gap:18px}
+/* ---------- C: title on the video ---------- */
+.c .media:after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(transparent,rgba(8,10,16,.92));pointer-events:none}
+.c .overlay{position:absolute;left:28px;right:28px;bottom:22px;z-index:1;color:#fff;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.c .overlay .label{color:#9db0ff}
+.c .overlay .title{color:#fff}
+.c .overlay .btn{background:#fff;color:#14130f!important}
+.c .body{padding:24px 30px 28px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:start}
+.c .left{display:flex;flex-direction:column;gap:18px}
+.c details{border-radius:14px;background:var(--accent-soft);padding:14px 18px}
+.c summary{cursor:pointer;font:13px var(--mono);color:var(--accent);list-style:none}
+.c summary::-webkit-details-marker{display:none}
+.c summary:after{content:" ▾"}
+.c details[open] summary:after{content:" ▴"}
+.c details ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--body);font-size:15px}
+/* ---------- D: case-study sidebar ---------- */
+.d .body{display:grid;grid-template-columns:230px minmax(0,1fr);gap:0}
+.d .side{padding:26px 24px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:20px;background:rgba(238,233,223,.35)}
+.d .meta-h{font:12px var(--mono);color:var(--muted);margin-bottom:4px}
+.d .side .stat{font-size:24px}
+.d .main{padding:26px 30px 30px;display:flex;flex-direction:column;gap:16px}
+.d .chips{display:flex;flex-wrap:wrap;gap:6px}
+.d .chip{padding:3px 9px;border-radius:7px;background:var(--chip);font:12px var(--mono)}
+@media (max-width:760px){.a .lessons,.b .cols,.c .body,.d .body{grid-template-columns:1fr}.d .side{border-right:none;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Project card: text layout options</h1>
+  <p class="lead">Same video on top in all four. Only the text underneath changes. Each one gives the title, description, numbers and lessons a clear order of importance.</p>
+
+  <!-- A -->
+  <section class="opt">
+    <div class="opt-head"><span class="n">A</span><h2>Single column, lessons as a row</h2></div>
+    <p class="why">Reads top to bottom like an article: tag, then title, description, numbers and links. The three lessons sit underneath as a row of small cards. The simplest and calmest option.</p>
+    <article class="card a">
+      <div class="media"><video autoplay muted loop playsinline poster="demos/razorpay-recovery-poster.jpg"><source src="demos/razorpay-recovery.webm" type="video/webm"><source src="demos/razorpay-recovery.mp4" type="video/mp4"></video></div>
+      <div class="body">
+        <div class="label">03 · typescript · postgres · razorpay · twilio</div>
+        <div class="head"><h3 class="title">razorpay_recovery</h3><div class="links"><a class="btn" href="#">code ↗</a></div></div>
+        <p class="desc">Recovers revenue from failed payments, subscriptions and overdue invoices. It diagnoses each failure, picks a bounded fix, respects quiet hours, and reports lift against a holdout group. Built for Razorpay's hackathon.</p>
+        <div class="stats"><div class="stat">30%<small>holdout to measure real lift</small></div><div class="stat">rules → AI<small>stricter action always wins</small></div></div>
+        <div class="lessons-h">// what I learned</div>
+        <div class="lessons">
+          <div class="lesson"><b>01</b>Let deterministic rules decide and let AI only make an action stricter.</div>
+          <div class="lesson"><b>02</b>Measure lift against a holdout group, not raw recovery counts.</div>
+          <div class="lesson"><b>03</b>Webhooks need signature checks and idempotency, or retries double-count.</div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- B -->
+  <section class="opt">
+    <div class="opt-head"><span class="n">B</span><h2>Header row, then two columns</h2></div>
+    <p class="why">The title and code button get their own row, separated by a line, so the name always reads first. Underneath: what it is and its numbers on the left, what I learned on the right.</p>
+    <article class="card b">
+      <div class="media"><video autoplay muted loop playsinline poster="demos/razorpay-recovery-poster.jpg"><source src="demos/razorpay-recovery.webm" type="video/webm"><source src="demos/razorpay-recovery.mp4" type="video/mp4"></video></div>
+      <div class="body">
+        <div class="top"><div><div class="label">03 · typescript · postgres · razorpay · twilio</div><h3 class="title">razorpay_recovery</h3></div><div class="links"><a class="btn" href="#">code ↗</a></div></div>
+        <div class="cols">
+          <div class="left">
+            <p class="desc">Recovers revenue from failed payments, subscriptions and overdue invoices. It diagnoses each failure, picks a bounded fix, respects quiet hours, and reports lift against a holdout group. Built for Razorpay's hackathon.</p>
+            <div class="stats"><div class="stat">30%<small>holdout to measure real lift</small></div><div class="stat">rules → AI<small>stricter action always wins</small></div></div>
+          </div>
+          <div class="learned"><div class="learned-h">// what I learned</div><ol><li>Let deterministic rules decide and let AI only make an action stricter, so the system stays predictable.</li><li>Measure lift against a holdout group, not raw recovery counts.</li><li>Webhooks need signature checks and idempotency, or retries count the same payment twice.</li></ol></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- C -->
+  <section class="opt">
+    <div class="opt-head"><span class="n">C</span><h2>Title on the video</h2></div>
+    <p class="why">The name and code button sit on the bottom of the video over a soft fade, like a film poster. That makes the card feel cinematic and keeps the text area short. Lessons open on click, so the card stays compact.</p>
+    <article class="card c">
+      <div class="media"><video autoplay muted loop playsinline poster="demos/razorpay-recovery-poster.jpg"><source src="demos/razorpay-recovery.webm" type="video/webm"><source src="demos/razorpay-recovery.mp4" type="video/mp4"></video>
+        <div class="overlay"><div><div class="label">03 · typescript · postgres · razorpay · twilio</div><h3 class="title">razorpay_recovery</h3></div><a class="btn" href="#">code ↗</a></div>
+      </div>
+      <div class="body">
+        <div class="left">
+          <p class="desc">Recovers revenue from failed payments, subscriptions and overdue invoices. It diagnoses each failure, picks a bounded fix, respects quiet hours, and reports lift against a holdout group. Built for Razorpay's hackathon.</p>
+          <div class="stats"><div class="stat">30%<small>holdout to measure real lift</small></div><div class="stat">rules → AI<small>stricter action always wins</small></div></div>
+        </div>
+        <details open><summary>// what I learned</summary><ol><li>Let deterministic rules decide and let AI only make an action stricter.</li><li>Measure lift against a holdout group, not raw recovery counts.</li><li>Webhooks need signature checks and idempotency, or retries double-count.</li></ol></details>
+      </div>
+    </article>
+  </section>
+
+  <!-- D -->
+  <section class="opt">
+    <div class="opt-head"><span class="n">D</span><h2>Case-study sidebar</h2></div>
+    <p class="why">A narrow side panel holds the facts (stack, numbers, links), and the main column holds the story (title, description, lessons). Feels like a proper case-study page, and the facts are quick to scan.</p>
+    <article class="card d">
+      <div class="media"><video autoplay muted loop playsinline poster="demos/razorpay-recovery-poster.jpg"><source src="demos/razorpay-recovery.webm" type="video/webm"><source src="demos/razorpay-recovery.mp4" type="video/mp4"></video></div>
+      <div class="body">
+        <aside class="side">
+          <div><div class="meta-h">stack</div><div class="chips"><span class="chip">typescript</span><span class="chip">postgres</span><span class="chip">razorpay</span><span class="chip">twilio</span></div></div>
+          <div><div class="meta-h">numbers</div><div class="stat">30%<small>holdout to measure lift</small></div><div class="stat" style="margin-top:12px">rules → AI<small>stricter action wins</small></div></div>
+          <div class="links"><a class="btn" href="#">code ↗</a></div>
+        </aside>
+        <div class="main">
+          <div class="label">03 · fintech</div>
+          <h3 class="title">razorpay_recovery</h3>
+          <p class="desc">Recovers revenue from failed payments, subscriptions and overdue invoices. It diagnoses each failure, picks a bounded fix, respects quiet hours, and reports lift against a holdout group. Built for Razorpay's hackathon.</p>
+          <div class="learned"><div class="learned-h">// what I learned</div><ol><li>Let deterministic rules decide and let AI only make an action stricter, so the system stays predictable.</li><li>Measure lift against a holdout group, not raw recovery counts.</li><li>Webhooks need signature checks and idempotency, or retries count the same payment twice.</li></ol></div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+</body>
+</html>
