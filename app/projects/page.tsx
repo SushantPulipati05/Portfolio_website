@@ -8,7 +8,7 @@ export const metadata: Metadata = pageMeta({
   path: "/projects",
   title: "Projects",
   description:
-    "Projects by Sushant Pulipati: a Redis-compatible database in Go, a Postgres job queue, a payment-recovery service, and Android and iOS apps.",
+    "Projects by Sushant Pulipati: a Redis clone in Go, a Postgres job queue, a payment-recovery service and mobile apps.",
 });
 
 function Links({ p }: { p: Project }) {

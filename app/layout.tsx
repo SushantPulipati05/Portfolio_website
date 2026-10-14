@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   ...pageMeta({
     path: "/",
     description:
-      "Sushant Pulipati is a software engineer and CS student in Pune who builds backend systems in Go, Android and iOS apps, and the interfaces on top.",
+      "Sushant Pulipati, a software engineer in Pune building backend systems in Go and Android and iOS apps.",
   }),
   title: {
     default: `${profile.name} · Software Engineer`,
