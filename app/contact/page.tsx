@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import ContactForm from "@/components/ContactForm";
 import { profile } from "@/data/content";
 
-export const metadata: Metadata = { title: "Contact · Sushant Pulipati" };
+export const metadata: Metadata = pageMeta({
+  path: "/contact",
+  title: "Contact",
+  description:
+    "Get in touch with Sushant Pulipati about software engineering roles and internships: email, GitHub and resume.",
+});
 
 export default function ContactPage() {
   const github = profile.github.replace(/^https?:\/\//, "");

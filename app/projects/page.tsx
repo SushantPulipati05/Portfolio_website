@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import DemoMedia from "@/components/DemoMedia";
 import { projects, type Project } from "@/data/content";
 
-export const metadata: Metadata = { title: "Projects · Sushant Pulipati" };
+export const metadata: Metadata = pageMeta({
+  path: "/projects",
+  title: "Projects",
+  description:
+    "Projects by Sushant Pulipati: a Redis-compatible database in Go, a Postgres job queue, a payment-recovery service, and Android and iOS apps.",
+});
 
 function Links({ p }: { p: Project }) {
   if (!p.links.length) return null;
