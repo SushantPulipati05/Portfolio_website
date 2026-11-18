@@ -49,7 +49,7 @@ export default function ContactPage() {
             <a className="row" href={profile.linkedin} target="_blank" rel="noreferrer">
               <b>LinkedIn</b>
               <small>↗</small>
-              <span>LinkedIn</span>
+              <span>{profile.linkedin.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}</span>
             </a>
           )}
           <a className="row" href={profile.resume} target="_blank" rel="noreferrer">

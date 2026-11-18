@@ -13,12 +13,23 @@ export default function Home() {
         </h1>
         <p className="lead">{profile.bio}</p>
         <div className="links-row">
-          <a href={profile.github} target="_blank" rel="noreferrer">github ↗</a>
+          <a href={profile.github} target="_blank" rel="noreferrer">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+          <a href={profile.x} target="_blank" rel="noreferrer">
+            X <span aria-hidden="true">↗</span>
+          </a>
           {profile.linkedin && (
-            <a href={profile.linkedin} target="_blank" rel="noreferrer">linkedin ↗</a>
+            <a href={profile.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn <span aria-hidden="true">↗</span>
+            </a>
           )}
-          <a href={`mailto:${profile.email}`}>email ↗</a>
-          <a href={profile.resume} target="_blank" rel="noreferrer">resume.pdf ↓</a>
+          <a href={profile.resume} target="_blank" rel="noreferrer">
+            Resume <span aria-hidden="true">↗</span>
+          </a>
+          <a href={`mailto:${profile.email}`}>
+            Email <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </section>
 

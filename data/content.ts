@@ -10,7 +10,7 @@ export const profile = {
   email: "sushantpulipati435@gmail.com",
   github: "https://github.com/SushantPulipati05",
   x: "https://x.com/sushantpulipat",
-  linkedin: "", // TODO: add your LinkedIn URL
+  linkedin: "https://www.linkedin.com/in/sushant-p-477632232/",
   resume: "/resume.pdf", // lives in /public/resume.pdf
 };
 

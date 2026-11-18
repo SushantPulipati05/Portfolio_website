@@ -144,9 +144,11 @@ a:hover { opacity: 1; }
   background: var(--accent); box-shadow: 0 0 10px var(--glow); animation: blink 1s steps(1) infinite;
 }
 
-.links-row { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 28px; font-family: var(--font-mono), monospace; font-size: 13px; }
-.links-row a { padding: 6px 0; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.links-row { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 30px; font-size: 14px; }
+.links-row a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; color: var(--muted); text-decoration: none; transition: color 0.2s; }
 .links-row a:hover { color: var(--text); }
+.links-row a span { display: inline-block; transition: transform 0.2s ease; }
+.links-row a:hover span { transform: translate(2px, -2px); }
 
 /* ---------- Sections ---------- */
 .section { padding-top: 104px; }
