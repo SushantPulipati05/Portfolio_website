@@ -41,14 +41,16 @@ export default function Starfield() {
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // About one star per 5,200 px² of screen; 6% of them are bigger and brighter.
-      stars = Array.from({ length: Math.round((W * H) / 5200) }, () => {
-        const big = Math.random() < 0.06;
+      // About one star per 1,600 px² of screen, in three sizes:
+      // 5% bright, 25% medium and 70% faint "dust" that fills out the sky.
+      stars = Array.from({ length: Math.round((W * H) / 1600) }, () => {
+        const roll = Math.random();
+        const size = roll < 0.05 ? "big" : roll < 0.3 ? "mid" : "dust";
         return {
           x: Math.random() * W,
           y: Math.random() * H * 2,
-          r: big ? 1.25 : 0.55 + Math.random() * 0.35,
-          a: big ? 0.9 : 0.2 + Math.random() * 0.5,
+          r: size === "big" ? 1.2 + Math.random() * 0.3 : size === "mid" ? 0.7 + Math.random() * 0.3 : 0.4 + Math.random() * 0.3,
+          a: size === "big" ? 0.9 : size === "mid" ? 0.45 + Math.random() * 0.4 : 0.25 + Math.random() * 0.3,
           p: Math.random() * Math.PI * 2, // twinkle phase
           s: 0.4 + Math.random() * 1.2, // twinkle speed
           d: 0.04 + Math.random() * 0.22, // parallax depth

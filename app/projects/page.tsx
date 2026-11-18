@@ -28,14 +28,14 @@ function Learned({ p, compact = false }: { p: Project; compact?: boolean }) {
   if (!p.learned.length) return null;
   if (compact) {
     return (
-      <div className="learned-compact" data-decrypt>
+      <div className="learned-compact">
         <span className="learned-h">{"// learned"}</span>
         {p.learned[0]}
       </div>
     );
   }
   return (
-    <div className="learned" data-decrypt>
+    <div className="learned">
       <div className="learned-h">{p.role ? "// my part & what I learned" : "// what I learned"}</div>
       {p.role && <p className="role">{p.role}</p>}
       <ol>
@@ -50,7 +50,7 @@ function Learned({ p, compact = false }: { p: Project; compact?: boolean }) {
 function Stats({ p }: { p: Project }) {
   if (!p.stats?.length) return null;
   return (
-    <div className="p-stats" data-decrypt>
+    <div className="p-stats">
       {p.stats.map((s) => (
         <div className="p-stat" key={s.label}>
           {s.value}
@@ -74,10 +74,10 @@ function FeaturedCard({ p, n }: { p: Project; n: number }) {
       <div className="case-content">
         <header className="case-top">
           <div>
-            <div className="p-label" data-decrypt>
+            <div className="p-label">
               {String(n).padStart(2, "0")} · {p.tags}
             </div>
-            <h3 data-decrypt>{p.name}</h3>
+            <h3>{p.name}</h3>
           </div>
           {p.links.length > 0 && (
             <div className="case-actions">
@@ -91,7 +91,7 @@ function FeaturedCard({ p, n }: { p: Project; n: number }) {
         </header>
         <div className="case-cols">
           <div className="case-info">
-            <p className="p-desc" data-decrypt>{p.description}</p>
+            <p className="p-desc">{p.description}</p>
             <Stats p={p} />
           </div>
           <Learned p={p} />
@@ -107,12 +107,12 @@ function AppCard({ p, n, flip }: { p: Project; n: number; flip: boolean }) {
     <article className={`app-card reveal${flip ? " flip" : ""}`}>
       <DemoMedia demo={p.demo} />
       <div className="case-body">
-        <div className="p-label" data-decrypt>
+        <div className="p-label">
           {String(n).padStart(2, "0")} · {p.tags}
         </div>
-        <h3 data-decrypt>{p.name}</h3>
-        {p.status && <span className="p-chip" data-decrypt>{p.status}</span>}
-        <p className="p-desc" data-decrypt>{p.description}</p>
+        <h3>{p.name}</h3>
+        {p.status && <span className="p-chip">{p.status}</span>}
+        <p className="p-desc">{p.description}</p>
         <Links p={p} />
         <Learned p={p} />
       </div>
@@ -124,12 +124,12 @@ function AppCard({ p, n, flip }: { p: Project; n: number; flip: boolean }) {
 function MiniCard({ p, n }: { p: Project; n: number }) {
   return (
     <article className="mini-card reveal">
-      <div className="p-label" data-decrypt>
+      <div className="p-label">
         {String(n).padStart(2, "0")} · {p.tags}
       </div>
-      <h3 data-decrypt>{p.name}</h3>
-      {p.status && <span className="p-chip" data-decrypt>{p.status}</span>}
-      <p className="p-desc" data-decrypt>{p.description}</p>
+      <h3>{p.name}</h3>
+      {p.status && <span className="p-chip">{p.status}</span>}
+      <p className="p-desc">{p.description}</p>
       <Links p={p} />
       <Learned p={p} compact />
     </article>
@@ -149,11 +149,11 @@ export default function ProjectsPage() {
       <div className="scroll-progress" aria-hidden="true" />
 
       <section className="page-header">
-        <div className="prompt" data-decrypt>$ ls ~/projects --sort=depth</div>
-        <h1 className="h1" data-decrypt>
+        <div className="prompt">$ ls ~/projects --sort=depth</div>
+        <h1 className="h1">
           Stuff I&apos;ve <span className="accent">built.</span>
         </h1>
-        <p className="lead" data-decrypt>
+        <p className="lead">
           Everything here started as something I didn&apos;t know how to do. Each project says what it taught me, because
           that&apos;s the real point of building it.
         </p>
@@ -161,7 +161,7 @@ export default function ProjectsPage() {
 
       {featured.length > 0 && (
         <section className="tier">
-          <div className="tier-head" data-decrypt>
+          <div className="tier-head">
             <h2>Deep dives</h2>
             <span>built properly, measured, documented</span>
           </div>
@@ -173,7 +173,7 @@ export default function ProjectsPage() {
 
       {apps.length > 0 && (
         <section className="tier">
-          <div className="tier-head" data-decrypt>
+          <div className="tier-head">
             <h2>Apps &amp; products</h2>
             <span>full-stack apps, shipped or in progress</span>
           </div>
@@ -192,7 +192,7 @@ export default function ProjectsPage() {
 
       {lab.length > 0 && (
         <section className="tier">
-          <div className="tier-head" data-decrypt>
+          <div className="tier-head">
             <h2>Small builds &amp; experiments</h2>
             <span>quick projects, each taught one thing</span>
           </div>
@@ -204,7 +204,7 @@ export default function ProjectsPage() {
         </section>
       )}
 
-      <div className="next-link" data-decrypt>
+      <div className="next-link">
         <Link href="/contact">contact →</Link>
       </div>
     </main>

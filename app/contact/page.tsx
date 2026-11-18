@@ -18,14 +18,14 @@ export default function ContactPage() {
   return (
     <main>
       <section className="page-header contact-hero">
-        <h1 className="h1" data-decrypt>
+        <h1 className="h1">
           Say <span className="accent">hi.</span>
         </h1>
-        <p className="lead" data-decrypt>
+        <p className="lead">
           Hiring, building something, or just curious about a project? Email reaches me fastest.
         </p>
         <div className="mail">
-          <a href={`mailto:${profile.email}`} data-decrypt>
+          <a href={`mailto:${profile.email}`}>
             {profile.email}
           </a>
           <CopyEmail email={profile.email} />
@@ -33,35 +33,35 @@ export default function ContactPage() {
       </section>
 
       <section className="section contact-section">
-        <div className="section-label" data-decrypt>Elsewhere</div>
+        <div className="section-label">Elsewhere</div>
         <div className="rows">
           <a className="row" href={profile.github} target="_blank" rel="noreferrer">
-            <b data-decrypt>GitHub</b>
+            <b>GitHub</b>
             <small>↗</small>
-            <span data-decrypt>{github}</span>
+            <span>{github}</span>
           </a>
           <a className="row" href={profile.x} target="_blank" rel="noreferrer">
-            <b data-decrypt>X</b>
+            <b>X</b>
             <small>↗</small>
-            <span data-decrypt>{xHandle}</span>
+            <span>{xHandle}</span>
           </a>
           {profile.linkedin && (
             <a className="row" href={profile.linkedin} target="_blank" rel="noreferrer">
-              <b data-decrypt>LinkedIn</b>
+              <b>LinkedIn</b>
               <small>↗</small>
-              <span data-decrypt>LinkedIn</span>
+              <span>LinkedIn</span>
             </a>
           )}
           <a className="row" href={profile.resume} target="_blank" rel="noreferrer">
-            <b data-decrypt>Resume</b>
+            <b>Resume</b>
             <small>↓</small>
-            <span data-decrypt>resume.pdf</span>
+            <span>resume.pdf</span>
           </a>
         </div>
       </section>
 
       <section className="section contact-section">
-        <div className="section-label" data-decrypt>Or send a message</div>
+        <div className="section-label">Or send a message</div>
         <ContactForm />
       </section>
     </main>

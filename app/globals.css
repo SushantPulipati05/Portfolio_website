@@ -88,11 +88,6 @@ a:hover { opacity: 1; }
 .accent { color: var(--accent); }
 .h1 .accent, .h2 .accent { font-style: italic; }
 
-/* ---------- Decrypt-on-scroll text (see components/Decryptor.tsx) ---------- */
-/* Hidden for the instant before the script scrambles it, so the plain text never flashes. */
-:root[data-js]:not([data-dx-fallback]) [data-decrypt]:not([data-dx]) { visibility: hidden; }
-[data-dx="locked"] { font-variant-ligatures: none; }
-
 /* ---------- Nav ---------- */
 .nav {
   position: sticky; top: 0; z-index: 20;

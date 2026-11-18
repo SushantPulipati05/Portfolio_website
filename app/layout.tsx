@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
 import Starfield from "@/components/Starfield";
-import Decryptor from "@/components/Decryptor";
 import Footer from "@/components/Footer";
 import { profile } from "@/data/content";
 import { pageMeta, siteUrl } from "@/lib/seo";
@@ -55,8 +54,6 @@ export const metadata: Metadata = {
 
 // Runs before the page paints so there's no light-to-dark flash.
 // Uses the saved choice if there is one; otherwise starts in dark (night sky) mode.
-// It also sets data-js, which lets text start "encrypted" (see Decryptor),
-// with a safety net that shows everything if the scripts never load.
 const themeScript = `
 (function () {
   var root = document.documentElement;
@@ -66,8 +63,6 @@ const themeScript = `
   } catch (e) {
     root.setAttribute("data-theme", "dark");
   }
-  root.setAttribute("data-js", "");
-  setTimeout(function () { root.setAttribute("data-dx-fallback", ""); }, 4000);
 })();
 `;
 
@@ -80,7 +75,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Starfield />
         <CustomCursor />
-        <Decryptor />
         <div className="container">
           <Nav />
           {children}
