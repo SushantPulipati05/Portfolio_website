@@ -438,3 +438,17 @@ a:hover { opacity: 1; }
   .case-top h3 { font-size: 26px; }
 }
 .contact-section .section-label { text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Contact form states */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-error { margin: 0; font-size: 14px; color: #f0a39a; }
+:root[data-theme="light"] .form-error { color: #b4382c; }
+.form-error a { color: inherit; }
+.btn:disabled { opacity: 0.6; cursor: wait; box-shadow: none; }
+.form-done { padding: 22px 0; display: grid; gap: 8px; justify-items: start; }
+.form-done p { margin: 0; color: var(--body); }
+.form-done-title { font-family: var(--font-display), serif; font-size: 32px; color: var(--text) !important; }
+.form-done-title::before {
+  content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 12px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 10px var(--green); vertical-align: 6px;
+}

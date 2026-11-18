@@ -1,39 +1,87 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { profile } from "@/data/content";
 
-// For now this opens the visitor's email app with the message filled in,
-// so it works without a backend. Later you can swap in a real API route
-// (e.g. app/api/contact/route.ts with Resend) without changing the UI.
+// Sends the message to /api/contact (app/api/contact/route.ts), which emails it to me.
+type Status = "idle" | "sending" | "sent" | "error";
+
 export default function ContactForm() {
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const name = String(data.get("name") ?? "");
-    const email = String(data.get("email") ?? "");
-    const message = String(data.get("message") ?? "");
-    const subject = encodeURIComponent(`Hello from ${name || "your website"}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name}${email ? ` (${email})` : ""}`);
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    setStatus("sending");
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          message: data.get("message"),
+          company: data.get("company"), // honeypot, empty for real visitors
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || "Something went wrong. Please try again.");
+      form.reset();
+      setStatus("sent");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setStatus("error");
+    }
   }
+
+  if (status === "sent") {
+    return (
+      <div className="form-done" role="status">
+        <p className="form-done-title">Transmission received.</p>
+        <p>Thanks for reaching out. I&apos;ll get back to you soon.</p>
+        <button type="button" className="copy" onClick={() => setStatus("idle")}>
+          send another
+        </button>
+      </div>
+    );
+  }
+
+  const sending = status === "sending";
 
   return (
     <form className="form" onSubmit={handleSubmit}>
       <div className="field">
         <label htmlFor="name">name</label>
-        <input id="name" name="name" type="text" autoComplete="name" required />
+        <input id="name" name="name" type="text" autoComplete="name" maxLength={100} required />
       </div>
       <div className="field">
         <label htmlFor="email">email</label>
-        <input id="email" name="email" type="email" autoComplete="email" required />
+        <input id="email" name="email" type="email" autoComplete="email" maxLength={200} required />
       </div>
       <div className="field">
         <label htmlFor="message">message</label>
-        <textarea id="message" name="message" rows={4} required />
+        <textarea id="message" name="message" rows={4} minLength={10} maxLength={5000} required />
       </div>
-      <button type="submit" className="btn">
-        send transmission →
+
+      {/* Honeypot: hidden from people and screen readers; bots fill it in */}
+      <div className="hp" aria-hidden="true">
+        <label htmlFor="company">company</label>
+        <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      {status === "error" && (
+        <p className="form-error" role="alert">
+          {error} You can also email{" "}
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>.
+        </p>
+      )}
+
+      <button type="submit" className="btn" disabled={sending}>
+        {sending ? "sending…" : "send transmission →"}
       </button>
     </form>
   );
