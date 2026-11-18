@@ -2,9 +2,28 @@ import Link from "next/link";
 import DomainIcon from "@/components/DomainIcon";
 import { domains, profile, story } from "@/data/content";
 
+// Structured data: tells Google who this site is about and which profiles are the same person.
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  url: "https://sushnt.dev",
+  jobTitle: "Software Engineer",
+  description: "Software engineer and CS student in Pune building backend systems in Go and Android and iOS apps.",
+  address: { "@type": "PostalAddress", addressLocality: "Pune", addressCountry: "IN" },
+  alumniOf: { "@type": "CollegeOrUniversity", name: "MIT World Peace University" },
+  knowsAbout: ["Go", "Distributed systems", "PostgreSQL", "Android", "iOS", "TypeScript"],
+  sameAs: [profile.github, profile.x, profile.linkedin].filter(Boolean),
+};
+
 export default function Home() {
   return (
     <main>
+      <script
+        type="application/ld+json"
+        // Escaping "<" keeps the data from ever closing the script tag early.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c") }}
+      />
       <section className="hero">
         <div className="prompt">$ whoami</div>
         <h1 className="h1">

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
@@ -50,6 +50,11 @@ export const metadata: Metadata = {
     default: `${profile.name} · Software Engineer`,
     template: `%s · ${profile.name}`, // pages set just their own name, e.g. "Projects"
   },
+};
+
+// Colours the phone browser's top bar to match the night sky.
+export const viewport: Viewport = {
+  themeColor: "#07080c",
 };
 
 // Runs before the page paints so there's no light-to-dark flash.
