@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
 import Starfield from "@/components/Starfield";
@@ -10,9 +10,33 @@ import { pageMeta, siteUrl } from "@/lib/seo";
 import "./globals.css";
 
 // Headings: Instrument Serif. Body: Hanken Grotesk. Labels and code: JetBrains Mono.
-const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });
-const sans = Hanken_Grotesk({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sans" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
+// The font files live in app/fonts (all free, OFL-licensed), so builds never
+// depend on downloading from Google Fonts.
+const display = localFont({
+  src: [
+    { path: "./fonts/instrument-serif-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/instrument-serif-latin-400-italic.woff2", weight: "400", style: "italic" },
+  ],
+  variable: "--font-display",
+  display: "swap",
+});
+const sans = localFont({
+  src: [
+    { path: "./fonts/hanken-grotesk-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/hanken-grotesk-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/hanken-grotesk-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-sans",
+  display: "swap",
+});
+const mono = localFont({
+  src: [
+    { path: "./fonts/jetbrains-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/jetbrains-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
+  ],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 // Default title/description and link-preview tags. Pages override them via pageMeta().
 // The preview image itself is app/opengraph-image.png (and app/twitter-image.png).
