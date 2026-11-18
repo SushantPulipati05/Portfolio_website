@@ -9,6 +9,7 @@ export const profile = {
   bio: "Hey, I'm Sushant. From Mumbai, studying CS in Pune, graduating in 2027, obsessed with how software works under the hood. I used to be a graphic designer, so yes, I care how it looks too.",
   email: "sushantpulipati435@gmail.com",
   github: "https://github.com/SushantPulipati05",
+  x: "https://x.com/sushantpulipat",
   linkedin: "", // TODO: add your LinkedIn URL
   resume: "/resume.pdf", // lives in /public/resume.pdf
 };

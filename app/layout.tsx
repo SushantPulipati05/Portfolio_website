@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Hanken_Grotesk, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
+import Starfield from "@/components/Starfield";
+import Decryptor from "@/components/Decryptor";
+import Footer from "@/components/Footer";
 import { profile } from "@/data/content";
 import { pageMeta, siteUrl } from "@/lib/seo";
 import "./globals.css";
 
-const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "800"], variable: "--font-display" });
-const sans = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sans" });
+// Headings: Instrument Serif. Body: Hanken Grotesk. Labels and code: JetBrains Mono.
+const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });
+const sans = Hanken_Grotesk({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 // Default title/description and link-preview tags. Pages override them via pageMeta().
@@ -26,14 +30,20 @@ export const metadata: Metadata = {
 };
 
 // Runs before the page paints so there's no light-to-dark flash.
-// Uses the saved choice if there is one, otherwise the OS setting.
+// Uses the saved choice if there is one; otherwise starts in dark (night sky) mode.
+// It also sets data-js, which lets text start "encrypted" (see Decryptor),
+// with a safety net that shows everything if the scripts never load.
 const themeScript = `
 (function () {
+  var root = document.documentElement;
   try {
     var saved = localStorage.getItem("theme");
-    var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-  } catch (e) {}
+    root.setAttribute("data-theme", saved === "light" ? "light" : "dark");
+  } catch (e) {
+    root.setAttribute("data-theme", "dark");
+  }
+  root.setAttribute("data-js", "");
+  setTimeout(function () { root.setAttribute("data-dx-fallback", ""); }, 4000);
 })();
 `;
 
@@ -44,10 +54,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <Starfield />
         <CustomCursor />
+        <Decryptor />
         <div className="container">
           <Nav />
           {children}
+          <Footer />
         </div>
       </body>
     </html>

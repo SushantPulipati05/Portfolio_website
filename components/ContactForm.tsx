@@ -20,14 +20,20 @@ export default function ContactForm() {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <label htmlFor="name">name</label>
-      <input id="name" name="name" type="text" autoComplete="name" required />
-      <label htmlFor="email">email</label>
-      <input id="email" name="email" type="email" autoComplete="email" required />
-      <label htmlFor="message">message</label>
-      <textarea id="message" name="message" rows={5} required />
+      <div className="field">
+        <label htmlFor="name">name</label>
+        <input id="name" name="name" type="text" autoComplete="name" required />
+      </div>
+      <div className="field">
+        <label htmlFor="email">email</label>
+        <input id="email" name="email" type="email" autoComplete="email" required />
+      </div>
+      <div className="field">
+        <label htmlFor="message">message</label>
+        <textarea id="message" name="message" rows={4} required />
+      </div>
       <button type="submit" className="btn">
-        send →
+        send transmission →
       </button>
     </form>
   );
