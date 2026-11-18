@@ -5,7 +5,8 @@ import { useEffect, useRef } from "react";
 // The night sky behind every page.
 // - Stars twinkle slowly and drift at different speeds as you scroll (parallax).
 // - Stars near the mouse brighten a little.
-// - Every 9 to 21 seconds a shooting star crosses the top of the screen.
+// - Shooting stars cross the sky every 1.5 to 4 seconds, up to 3 at a time,
+//   each with its own speed, length and angle.
 // Star colour comes from the --star CSS variable, so light mode gets dark "stars".
 // With "reduced motion" turned on, it draws one still frame and stops.
 type Star = { x: number; y: number; r: number; a: number; p: number; s: number; d: number };
@@ -26,8 +27,9 @@ export default function Starfield() {
     let mx = -999;
     let my = -999;
     let frame = 0;
-    let shoot: { x: number; y: number; l: number } | null = null;
-    let nextShoot = performance.now() + 5000;
+    type Shooter = { x: number; y: number; l: number; speed: number; max: number; slope: number; fade: number };
+    let shooters: Shooter[] = [];
+    let nextShoot = performance.now() + 1200;
     let color = "223,228,255";
 
     const readColor = () => {
@@ -76,28 +78,43 @@ export default function Starfield() {
       }
 
       if (!reduceMotion) {
-        if (!shoot && t > nextShoot) {
-          shoot = { x: Math.random() * W * 0.7 + W * 0.2, y: Math.random() * H * 0.35, l: 0 };
+        if (t > nextShoot && shooters.length < 3) {
+          shooters.push({
+            x: Math.random() * W * 0.8 + W * 0.25, // start point (it travels down and to the left)
+            y: Math.random() * H * 0.5,
+            l: 0,
+            speed: 9 + Math.random() * 10,
+            max: 80 + Math.random() * 110, // tail length
+            slope: 0.3 + Math.random() * 0.35, // how steeply it falls
+            fade: W * (0.35 + Math.random() * 0.35), // distance before it burns out
+          });
+          nextShoot = t + 1500 + Math.random() * 2500;
         }
-        if (shoot) {
-          shoot.l += 14;
-          const len = Math.min(shoot.l, 120);
-          const hx = shoot.x - shoot.l * 0.9;
-          const hy = shoot.y + shoot.l * 0.45;
-          const g = ctx.createLinearGradient(hx, hy, hx + len * 0.9, hy - len * 0.45);
-          g.addColorStop(0, `rgba(${color},0.9)`);
+        for (const s of shooters) {
+          s.l += s.speed;
+          const len = Math.min(s.l, s.max);
+          const hx = s.x - s.l; // head
+          const hy = s.y + s.l * s.slope;
+          const life = Math.max(0, 1 - s.l / s.fade); // dims as it travels
+          const g = ctx.createLinearGradient(hx, hy, hx + len, hy - len * s.slope);
+          g.addColorStop(0, `rgba(${color},${life})`);
           g.addColorStop(1, `rgba(${color},0)`);
           ctx.strokeStyle = g;
-          ctx.lineWidth = 1.2;
+          ctx.lineWidth = 1.6;
           ctx.beginPath();
           ctx.moveTo(hx, hy);
-          ctx.lineTo(hx + len * 0.9, hy - len * 0.45);
+          ctx.lineTo(hx + len, hy - len * s.slope);
           ctx.stroke();
-          if (shoot.l > W * 0.6) {
-            shoot = null;
-            nextShoot = t + 9000 + Math.random() * 12000;
-          }
+          // bright head with a soft glow
+          const head = ctx.createRadialGradient(hx, hy, 0, hx, hy, 6);
+          head.addColorStop(0, `rgba(${color},${life})`);
+          head.addColorStop(1, `rgba(${color},0)`);
+          ctx.fillStyle = head;
+          ctx.beginPath();
+          ctx.arc(hx, hy, 6, 0, Math.PI * 2);
+          ctx.fill();
         }
+        shooters = shooters.filter((s) => s.l < s.fade);
         frame = requestAnimationFrame(draw);
       }
     };

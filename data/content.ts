@@ -25,6 +25,7 @@ export const story: StoryItem[] = [
   { date: "2025–26", text: "Learned Kotlin and built TrainLog, an Android workout tracker. Beta testers: two, and one of them is me." },
   { date: "Apr 2026", text: "iOS software engineer intern at Infosys in Mysuru. " },
   { date: "2026", text: "Decided I wanted to understand backends, so I picked Go. Built a CLI task tracker, then a small HTTP API, then a journaling app with its own sync engine." },
+  { date: "2026", text: "Building Redis_Go, a Redis-compatible database with replication and automatic failover." },
   { date: "now", text: "Building and shipping apps that make everyday life a little easier.", highlight: true },
 ];
 

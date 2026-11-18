@@ -290,31 +290,28 @@ a:hover { opacity: 1; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-/* ---------- Custom cursor: a small glowing star and a faint ring ---------- */
+/* ---------- Custom cursor: a small glowing star that opens into a ring over links ---------- */
 /* Only active when CustomCursor adds .custom-cursor (mouse devices only) */
 .custom-cursor, .custom-cursor * { cursor: none !important; }
 .custom-cursor input, .custom-cursor textarea, .custom-cursor [contenteditable="true"] { cursor: text !important; }
 
-.cursor-dot, .cursor-ring {
+.cursor-dot {
   position: fixed; left: 0; top: 0; z-index: 1000; pointer-events: none;
-  border-radius: 50%; opacity: 0; transition: opacity 0.2s ease;
+  width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+  background: var(--text); border: 1px solid transparent; box-shadow: 0 0 14px 3px var(--glow);
+  opacity: 0;
+  transition: opacity 0.3s ease, width 0.2s ease, height 0.2s ease, margin 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
-.cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--text); box-shadow: 0 0 12px 3px var(--glow); }
-.cursor-ring {
-  width: 30px; height: 30px; margin: -15px 0 0 -15px; border: 1px solid var(--accent-line);
-  transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease, margin 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-}
-.cursor-visible .cursor-dot, .cursor-visible .cursor-ring { opacity: 1; }
-
-/* Over links and buttons the ring grows and glows */
-.cursor-hover .cursor-ring {
-  width: 48px; height: 48px; margin: -24px 0 0 -24px; border-color: var(--accent);
-  background-color: color-mix(in srgb, var(--accent) 8%, transparent); box-shadow: 0 0 18px var(--glow);
+.cursor-visible .cursor-dot { opacity: 1; }
+/* Over links and buttons: a glowing ring */
+.cursor-hover .cursor-dot {
+  width: 28px; height: 28px; margin: -14px 0 0 -14px;
+  background: transparent; border-color: var(--accent); box-shadow: 0 0 18px var(--glow);
 }
 /* Click feedback */
-.cursor-down .cursor-ring { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
-/* In text fields, hide the custom cursor so the normal typing cursor shows */
-.cursor-text .cursor-dot, .cursor-text .cursor-ring { opacity: 0; }
+.cursor-down .cursor-dot { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
+/* In text fields, hide it so the normal typing cursor shows */
+.cursor-text .cursor-dot { opacity: 0; }
 
 /* ---------- Projects page: tiers ---------- */
 .tier { margin-top: 88px; }

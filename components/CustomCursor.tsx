@@ -2,35 +2,27 @@
 
 import { useEffect, useRef } from "react";
 
-// Dot + trailing ring cursor.
+// A small glowing star that follows the mouse exactly.
+// Over links and buttons it opens into a glowing ring.
 // - Only turns on for devices with a real mouse (touch screens keep normal behaviour).
 // - Text fields keep the normal typing cursor.
-// - With "reduced motion" turned on, the ring follows instantly instead of gliding.
 const INTERACTIVE = "a, button, [role='button'], label, select, summary";
 const TEXT_FIELDS = "input, textarea, [contenteditable='true']";
 
 export default function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
     const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring) return;
+    if (!dot) return;
 
     const root = document.body; // React never sets a className on <body>, so these classes are safe here
     root.classList.add("custom-cursor");
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let x = -100, y = -100, rx = -100, ry = -100;
-    let frame = 0;
-
     const onMove = (e: MouseEvent) => {
-      x = e.clientX;
-      y = e.clientY;
-      dot.style.transform = `translate(${x}px, ${y}px)`;
+      dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
       root.classList.add("cursor-visible");
     };
 
@@ -45,15 +37,6 @@ export default function CustomCursor() {
     const onDown = () => root.classList.add("cursor-down");
     const onUp = () => root.classList.remove("cursor-down");
 
-    const loop = () => {
-      const ease = reduceMotion ? 1 : 0.18;
-      rx += (x - rx) * ease;
-      ry += (y - ry) * ease;
-      ring.style.transform = `translate(${rx}px, ${ry}px)`;
-      frame = requestAnimationFrame(loop);
-    };
-    frame = requestAnimationFrame(loop);
-
     window.addEventListener("mousemove", onMove);
     document.addEventListener("mouseover", onOver);
     document.documentElement.addEventListener("mouseleave", onLeave);
@@ -61,7 +44,6 @@ export default function CustomCursor() {
     window.addEventListener("mouseup", onUp);
 
     return () => {
-      cancelAnimationFrame(frame);
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseover", onOver);
       document.documentElement.removeEventListener("mouseleave", onLeave);
@@ -71,10 +53,5 @@ export default function CustomCursor() {
     };
   }, []);
 
-  return (
-    <>
-      <div ref={ringRef} className="cursor-ring" aria-hidden="true" />
-      <div ref={dotRef} className="cursor-dot" aria-hidden="true" />
-    </>
-  );
+  return <div ref={dotRef} className="cursor-dot" aria-hidden="true" />;
 }

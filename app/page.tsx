@@ -27,7 +27,7 @@ export default function Home() {
         <h2 id="story-title" className="h2">How I got here</h2>
         <div className="story">
           {story.map((item) => (
-            <div className="story-row" key={item.date}>
+            <div className="story-row" key={item.date + item.text}>
               <div className={`story-date${item.highlight ? " now" : ""}`}>{item.date}</div>
               <div className="story-text">{item.text}</div>
             </div>
