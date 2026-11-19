@@ -57,21 +57,24 @@ const escapeHtml = (s: string) =>
 
 function confirmationEmail(firstName: string) {
   const text = [
-    `Hi ${firstName},`,
+    `Hey ${firstName},`,
     "",
-    "Thanks for reaching out through sushnt.dev. Your message reached me, and I'll get back to you as soon as I can, usually within a couple of days.",
+    "Your message made it across the void and landed safely in my inbox. 🛰️",
     "",
-    "Sushant",
+    "I read every one myself (no bots here, except the one sending you this), so give me a day or two and I’ll write back properly.",
+    "",
+    "Sushant Pulipati",
     "sushnt.dev",
     "",
-    "(This is an automatic confirmation. If you didn't send a message on sushnt.dev, you can ignore this email.)",
+    "(If you didn’t send a message on sushnt.dev, you can ignore this email.)",
   ].join("\n");
 
   const html = `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#16161a;max-width:520px">
-  <p>Hi ${escapeHtml(firstName)},</p>
-  <p>Thanks for reaching out through <a href="https://sushnt.dev" style="color:#3346d8">sushnt.dev</a>. Your message reached me, and I'll get back to you as soon as I can, usually within a couple of days.</p>
-  <p>Sushant<br><a href="https://sushnt.dev" style="color:#3346d8">sushnt.dev</a></p>
-  <p style="font-size:12px;color:#85868d">This is an automatic confirmation. If you didn't send a message on sushnt.dev, you can ignore this email.</p>
+  <p>Hey ${escapeHtml(firstName)},</p>
+  <p>Your message made it across the void and landed safely in my inbox. 🛰️</p>
+  <p>I read every one myself (no bots here, except the one sending you this), so give me a day or two and I’ll write back properly.</p>
+  <p>Sushant Pulipati<br><a href="https://sushnt.dev" style="color:#3346d8">sushnt.dev</a></p>
+  <p style="font-size:12px;color:#85868d">If you didn’t send a message on sushnt.dev, you can ignore this email.</p>
 </div>`;
 
   return { text, html };
@@ -141,7 +144,7 @@ export async function POST(request: Request) {
       from: FROM,
       to: email,
       replyTo: toEmail, // if they reply to the confirmation, it comes to my Gmail
-      subject: "Got your message",
+      subject: "Transmission received",
       text,
       html,
     });
