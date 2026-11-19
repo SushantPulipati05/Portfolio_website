@@ -1,19 +1,80 @@
 import { Resend } from "resend";
 
 // POST /api/contact
-// Receives the contact form as JSON, checks it, and emails it to me through Resend.
+// Receives the contact form as JSON, checks it, emails it to me through Resend,
+// then sends the visitor a short "got your message" confirmation.
 // The API key only lives on the server (env vars), so the browser never sees it.
 //
 // Status codes:
 //   200  sent (or silently dropped spam)
 //   400  the visitor sent something invalid
+//   429  too many messages from the same visitor
 //   500  my setup is broken (missing env vars)
 //   502  Resend failed to send
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const FROM = process.env.CONTACT_FROM_EMAIL || "Sushant <hello@sushnt.dev>"; // must be on the verified domain
+
+// ---------- Rate limiting ----------
+// At most 3 messages per visitor (IP) per hour, and at most 2 confirmation emails
+// to the same address per day. This stops someone from using the form to flood an
+// inbox. It's kept in memory, so it's best-effort: each server instance on Vercel
+// has its own counters. If the form ever gets abused, move this to a shared store
+// like Upstash Redis.
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
+const hits = new Map<string, number[]>();
+
+function tooMany(key: string, limit: number, windowMs: number) {
+  const now = Date.now();
+  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
+  if (recent.length >= limit) {
+    hits.set(key, recent);
+    return true;
+  }
+  recent.push(now);
+  hits.set(key, recent);
+  // Keep the map from growing forever on a long-lived instance.
+  if (hits.size > 5000) hits.clear();
+  return false;
+}
 
 function bad(message: string, status = 400) {
   return Response.json({ error: message }, { status });
+}
+
+// Only use the visitor's name in the confirmation if it looks like a plain name,
+// so the form can't be used to send links or messages to someone else.
+function safeFirstName(name: string) {
+  const looksLikeLink = /(https?:|www\.|\.[a-z]{2,}\b|[<>@/\\])/i.test(name);
+  if (looksLikeLink) return "there";
+  const first = name.split(/\s+/)[0].slice(0, 40);
+  return first || "there";
+}
+
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
+function confirmationEmail(firstName: string) {
+  const text = [
+    `Hi ${firstName},`,
+    "",
+    "Thanks for reaching out through sushnt.dev. Your message reached me, and I'll get back to you as soon as I can, usually within a couple of days.",
+    "",
+    "Sushant",
+    "sushnt.dev",
+    "",
+    "(This is an automatic confirmation. If you didn't send a message on sushnt.dev, you can ignore this email.)",
+  ].join("\n");
+
+  const html = `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#16161a;max-width:520px">
+  <p>Hi ${escapeHtml(firstName)},</p>
+  <p>Thanks for reaching out through <a href="https://sushnt.dev" style="color:#3346d8">sushnt.dev</a>. Your message reached me, and I'll get back to you as soon as I can, usually within a couple of days.</p>
+  <p>Sushant<br><a href="https://sushnt.dev" style="color:#3346d8">sushnt.dev</a></p>
+  <p style="font-size:12px;color:#85868d">This is an automatic confirmation. If you didn't send a message on sushnt.dev, you can ignore this email.</p>
+</div>`;
+
+  return { text, html };
 }
 
 export async function POST(request: Request) {
@@ -42,7 +103,13 @@ export async function POST(request: Request) {
   if (message.length < 10) return bad("Your message is a bit short. Say a little more?");
   if (message.length > 5000) return bad("Your message is too long (5,000 characters max).");
 
-  // 4. Config
+  // 4. Rate limit per visitor
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
+  if (tooMany(`ip:${ip}`, 3, HOUR)) {
+    return bad("You've sent a few messages already. Please try again in an hour.", 429);
+  }
+
+  // 5. Config
   const apiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.CONTACT_TO_EMAIL;
   if (!apiKey || !toEmail) {
@@ -50,10 +117,11 @@ export async function POST(request: Request) {
     return bad("The form isn't set up right now.", 500);
   }
 
-  // 5. Send
   const resend = new Resend(apiKey);
+
+  // 6. Send the message to me
   const { error } = await resend.emails.send({
-    from: "Portfolio <onboarding@resend.dev>", // Resend's test sender until sushnt.dev is verified
+    from: FROM,
     to: toEmail,
     replyTo: email, // replying in Gmail goes straight to the visitor
     subject: `New message from ${name} via sushnt.dev`,
@@ -63,6 +131,21 @@ export async function POST(request: Request) {
   if (error) {
     console.error("Contact form: Resend error", error);
     return bad("Couldn't send right now. Please try again in a bit.", 502);
+  }
+
+  // 7. Confirmation to the visitor. Fixed text, never their message.
+  //    If this fails, their message still reached me, so don't show an error.
+  if (!tooMany(`to:${email.toLowerCase()}`, 2, DAY)) {
+    const { text, html } = confirmationEmail(safeFirstName(name));
+    const confirm = await resend.emails.send({
+      from: FROM,
+      to: email,
+      replyTo: toEmail, // if they reply to the confirmation, it comes to my Gmail
+      subject: "Got your message",
+      text,
+      html,
+    });
+    if (confirm.error) console.error("Contact form: confirmation email failed", confirm.error);
   }
 
   return Response.json({ ok: true });

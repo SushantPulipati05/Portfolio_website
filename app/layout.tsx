@@ -8,9 +8,7 @@ import { profile } from "@/data/content";
 import { pageMeta, siteUrl } from "@/lib/seo";
 import "./globals.css";
 
-// Headings: Instrument Serif. Body: Hanken Grotesk. Labels and code: JetBrains Mono.
-// The font files live in app/fonts (all free, OFL-licensed), so builds never
-// depend on downloading from Google Fonts.
+
 const display = localFont({
   src: [
     { path: "./fonts/instrument-serif-latin-400-normal.woff2", weight: "400", style: "normal" },
